@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,13 @@ public class Game : MonoBehaviour
     public GameObject ShopPanel;
     [SerializeField] private int ClickScore = 1;
 
+    private bool canUpgradeWood = false;
+    private bool canUpgradeStone = false;
+    private bool canUpgradeIron = false;
+    private bool canUpgradeGold = false;
+    private bool canUpgradeDiamond = false;
+
+
     public void OnClickGrassButton()
     {
         Score += ClickScore;
@@ -29,6 +37,7 @@ public class Game : MonoBehaviour
             Costs[0] *= 2;
             ClickScore += 2;
             CostWoodText.text = Costs[0] + "$";
+           
         }
     }
 
@@ -74,7 +83,85 @@ public class Game : MonoBehaviour
     }
     private void Update()
     {
-        ScoreText.text = Score + "$";
+        ScoreText.text = Convert.ToString(Score);
+
+        // Проверяем, хватает ли денег для апгрейда дерева
+        canUpgradeWood = (Score >= Costs[0]);
+        canUpgradeStone = (Score >= Costs[1]);
+        canUpgradeIron = (Score >= Costs[2]);
+        canUpgradeGold = (Score >= Costs[3]);
+        canUpgradeDiamond = (Score >= Costs[4]);
+
+        // Обновляем спрайт кнопки деревянка в зависимости от условия
+        if (canUpgradeWood)
+        {
+            Button woodButton = CostWoodText.GetComponentInParent<Button>();
+            Image woodButtonImage = woodButton.GetComponent<Image>();
+            woodButtonImage.sprite = Resources.Load<Sprite>("button_wood");
+        }
+        else
+        {
+            Button woodButton = CostWoodText.GetComponentInParent<Button>();
+            Image woodButtonImage = woodButton.GetComponent<Image>();
+            woodButtonImage.sprite = Resources.Load<Sprite>("Button_woodNO");
+        }
+        // Обновляем спрайт кнопки камень в зависимости от условия
+        if (canUpgradeStone)
+        {
+            Button stoneButton = CostStoneText.GetComponentInParent<Button>();
+            Image stoneButtonImage = stoneButton.GetComponent<Image>();
+            stoneButtonImage.sprite = Resources.Load<Sprite>("button_stone");
+        }
+        else
+        {
+            Button stoneButton = CostStoneText.GetComponentInParent<Button>();
+            Image stoneButtonImage = stoneButton.GetComponent<Image>();
+            stoneButtonImage.sprite = Resources.Load<Sprite>("Button_stoneNO");
+        }
+        // Обновляем спрайт кнопки железо в зависимости от условия
+        if (canUpgradeIron)
+        {
+            Button IronButton = CostIronText.GetComponentInParent<Button>();
+            Image IronButtonImage = IronButton.GetComponent<Image>();
+            IronButtonImage.sprite = Resources.Load<Sprite>("button_iron");
+        }
+        else
+        {
+            Button IronButton = CostIronText.GetComponentInParent<Button>();
+            Image IronButtonImage = IronButton.GetComponent<Image>();
+            IronButtonImage.sprite = Resources.Load<Sprite>("Button_ironNO");
+        }
+
+        // Обновляем спрайт кнопки голда в зависимости от условия
+        if (canUpgradeGold)
+        {
+            Button GoldButton = CostGoldText.GetComponentInParent<Button>();
+            Image GoldButtonImage = GoldButton.GetComponent<Image>();
+            GoldButtonImage.sprite = Resources.Load<Sprite>("button_gold");
+        }
+        else
+        {
+            Button GoldButton = CostGoldText.GetComponentInParent<Button>();
+            Image GoldButtonImage = GoldButton.GetComponent<Image>();
+            GoldButtonImage.sprite = Resources.Load<Sprite>("Button_goldNO");
+        }
+
+        // Обновляем спрайт кнопки алмазик в зависимости от условия
+        if (canUpgradeDiamond)
+        {
+            Button DiamondButton = CostDaimondText.GetComponentInParent<Button>();
+            Image DiamondButtonImage = DiamondButton.GetComponent<Image>();
+            DiamondButtonImage.sprite = Resources.Load<Sprite>("button_diamond");
+        }
+        else
+        {
+            Button DiamondButton = CostDaimondText.GetComponentInParent<Button>();
+            Image DiamondButtonImage = DiamondButton.GetComponent<Image>();
+            DiamondButtonImage.sprite = Resources.Load<Sprite>("Button_diamondNO");
+        }
+
     }
+
+    
 
 }
