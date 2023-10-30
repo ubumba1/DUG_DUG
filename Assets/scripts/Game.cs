@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class Game : MonoBehaviour
 {
     [SerializeField] int Score;
@@ -16,6 +17,7 @@ public class Game : MonoBehaviour
     public Text ScoreText;
     public GameObject ShopPanel;
     [SerializeField] private int ClickScore = 1;
+   
 
     private bool canUpgradeWood = false;
     private bool canUpgradeStone = false;
@@ -23,11 +25,17 @@ public class Game : MonoBehaviour
     private bool canUpgradeGold = false;
     private bool canUpgradeDiamond = false;
 
+    public GameObject ButtonBuy;
+   
+    
+
+   
 
     public void OnClickGrassButton()
     {
         Score += ClickScore;
     }
+
 
     public void OnClickWoodUpgrade()
     {
@@ -37,7 +45,11 @@ public class Game : MonoBehaviour
             Costs[0] *= 2;
             ClickScore += 2;
             CostWoodText.text = Costs[0] + "$";
-           
+            SoundController soundController = ButtonBuy.GetComponent<SoundController>();
+            if (soundController != null)
+            {
+                soundController.OnClickSoundButton();
+            }
         }
     }
 
@@ -49,6 +61,11 @@ public class Game : MonoBehaviour
             Costs[1] *= 2;
             ClickScore += 50;
             CostStoneText.text = Costs[1] + "$";
+            SoundController soundController = ButtonBuy.GetComponent<SoundController>();
+            if (soundController != null)
+            {
+                soundController.OnClickSoundButton();
+            }
         }
     }
     public void OnClickIronUpgrade()
@@ -59,6 +76,11 @@ public class Game : MonoBehaviour
             Costs[2] *= 2;
             ClickScore += 100;
             CostIronText.text = Costs[2] + "$";
+            SoundController soundController = ButtonBuy.GetComponent<SoundController>();
+            if (soundController != null)
+            {
+                soundController.OnClickSoundButton();
+            }
         }
     }
     public void OnClickGoldUpgrade()
@@ -69,6 +91,11 @@ public class Game : MonoBehaviour
             Costs[3] *= 2;
             ClickScore += 5000;
             CostGoldText.text = Costs[3] + "$";
+            SoundController soundController = ButtonBuy.GetComponent<SoundController>();
+            if (soundController != null)
+            {
+                soundController.OnClickSoundButton();
+            }
         }
     }
     public void OnClickDaimondUpgrade()
@@ -79,6 +106,11 @@ public class Game : MonoBehaviour
             Costs[4] *= 2;
             ClickScore += 100000;
             CostDaimondText.text = Costs[4] + "$";
+            SoundController soundController = ButtonBuy.GetComponent<SoundController>();
+            if (soundController != null)
+            {
+                soundController.OnClickSoundButton();
+            }
         }
     }
     private void Update()
@@ -161,7 +193,5 @@ public class Game : MonoBehaviour
         }
 
     }
-
-    
 
 }
