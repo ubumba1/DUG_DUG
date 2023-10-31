@@ -5,30 +5,38 @@ using UnityEngine.UI;
 
 public class ChangeButtonSprite : MonoBehaviour
 {
-    public Sprite[] sprites; // Массив спрайтов для кнопки
-    private Button grassButton; // Ссылка на компонент кнопки
-    private int clickCounter = 0; // Счетчик нажатий
+    public Sprite[] sprites;
+    public float backgroundMoveAmount = 1; 
+
+    private Button grassButton;
+    private int clickCounter = 0;
+
+    
+    public moveBackground backgroundMover;
 
     void Start()
     {
-        grassButton = GetComponent<Button>(); // Получаем компонент кнопки
-        grassButton.onClick.AddListener(OnClickButton); // Подписываемся на событие нажатия кнопки
-        grassButton.image.sprite = sprites[0]; // Устанавливаем начальный спрайт
+        grassButton = GetComponent<Button>();
+        grassButton.onClick.AddListener(OnClickButton);
+        grassButton.image.sprite = sprites[0];
     }
 
     void OnClickButton()
     {
         clickCounter++;
 
-        if (clickCounter % 4 == 0) // Проверяем, было ли нажато 4 раза
+        if (clickCounter % 4 == 0)
         {
-            int currentSpriteIndex = clickCounter / 4; // Вычисляем индекс нового спрайта
-            if (currentSpriteIndex >= sprites.Length) // Если вышли за пределы массива, начинаем сначала
+            int currentSpriteIndex = clickCounter / 4;
+            if (currentSpriteIndex >= sprites.Length)
             {
                 currentSpriteIndex = 0;
-                clickCounter = 0; // Сбрасываем счетчик
+                clickCounter = 0;
             }
-            grassButton.image.sprite = sprites[currentSpriteIndex]; // Устанавливаем новый спрайт
+            grassButton.image.sprite = sprites[currentSpriteIndex];
+
+            
+            backgroundMover.RaiseBackground(backgroundMoveAmount);
         }
     }
 }
