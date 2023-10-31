@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class Game : MonoBehaviour
 {
-    [SerializeField] int Score;
-    public int[] Costs = {100,1000,10000,100000,1000000};
+    [SerializeField] ulong Score;
+    public ulong[] Costs = {100,1000,10000,100000,1000000};
     public Text CostWoodText;
     public Text CostStoneText;
     public Text CostIronText;
@@ -16,7 +16,16 @@ public class Game : MonoBehaviour
     public Text CostDaimondText;
     public Text ScoreText;
     public GameObject ShopPanel;
-    [SerializeField] private int ClickScore = 1;
+    public GameObject grass_block;
+    public GameObject dirt_block;
+    public GameObject stone_block;
+    public GameObject cubblestone_block;
+    public GameObject basalt_block;
+    public GameObject deepslate_block;
+    public GameObject coal;
+    public GameObject gold_ore_block;
+
+    [SerializeField] private ulong ClickScore = 1;
    
 
     private bool canUpgradeWood = false;
@@ -27,16 +36,37 @@ public class Game : MonoBehaviour
 
     public GameObject ButtonBuy;
    
-    
-
-   
 
     public void OnClickGrassButton()
     {
         Score += ClickScore;
     }
 
+    private string ShowCost(ulong val)
+    {
+        string[] symbols = { "", "K", "M", "B", "T", "aa", "ab" };
+        string res = "";
 
+        int symbolIndex = 0;
+        double valAsDouble = (double)val;
+
+        while (valAsDouble >= 1000 && symbolIndex < symbols.Length)
+        {
+            valAsDouble /= 1000.0;
+            symbolIndex++;
+        }
+
+        if (valAsDouble < 10)
+        {
+            res = $"{valAsDouble:F1}{symbols[symbolIndex]}";
+        }
+        else
+        {
+            res = $"{valAsDouble:F0}{symbols[symbolIndex]}";
+        }
+
+        return res;
+    }
     public void OnClickWoodUpgrade()
     {
         if (Score >= Costs[0])
@@ -44,7 +74,7 @@ public class Game : MonoBehaviour
             Score -= Costs[0];
             Costs[0] *= 2;
             ClickScore += 2;
-            CostWoodText.text = Costs[0] + "$";
+            CostWoodText.text = ShowCost(Costs[0]) + "$";
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -60,7 +90,7 @@ public class Game : MonoBehaviour
             Score -= Costs[1];
             Costs[1] *= 2;
             ClickScore += 50;
-            CostStoneText.text = Costs[1] + "$";
+            CostStoneText.text = ShowCost(Costs[1]) + "$";
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -75,7 +105,7 @@ public class Game : MonoBehaviour
             Score -= Costs[2];
             Costs[2] *= 2;
             ClickScore += 100;
-            CostIronText.text = Costs[2] + "$";
+            CostIronText.text = ShowCost(Costs[2]) + "$";
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -90,7 +120,7 @@ public class Game : MonoBehaviour
             Score -= Costs[3];
             Costs[3] *= 2;
             ClickScore += 5000;
-            CostGoldText.text = Costs[3] + "$";
+            CostGoldText.text = ShowCost(Costs[3]) + "$";
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -105,7 +135,7 @@ public class Game : MonoBehaviour
             Score -= Costs[4];
             Costs[4] *= 2;
             ClickScore += 100000;
-            CostDaimondText.text = Costs[4] + "$";
+            CostDaimondText.text = ShowCost(Costs[4]) + "$";
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -113,85 +143,33 @@ public class Game : MonoBehaviour
             }
         }
     }
+    
     private void Update()
+        {
+            ScoreText.text = ShowCost(Score);
+
+            UpdateButton(CostWoodText, 0, "button_wood", "Button_woodNO");
+            UpdateButton(CostStoneText, 1, "button_stone", "Button_stoneNO");
+            UpdateButton(CostIronText, 2, "button_iron", "Button_ironNO");
+            UpdateButton(CostGoldText, 3, "button_gold", "Button_goldNO");
+            UpdateButton(CostDaimondText, 4, "button_diamond", "Button_diamondNO");
+        }
+
+    private void UpdateButton(Text costText, int index, string upgradeSpriteName, string noUpgradeSpriteName)
     {
-        ScoreText.text = Convert.ToString(Score);
+        Button button = costText.GetComponentInParent<Button>();
+        Image buttonImage = button.GetComponent<Image>();
+        
+        bool canUpgrade = (Score >= Costs[index]);
 
-        // Проверяем, хватает ли денег для апгрейда дерева
-        canUpgradeWood = (Score >= Costs[0]);
-        canUpgradeStone = (Score >= Costs[1]);
-        canUpgradeIron = (Score >= Costs[2]);
-        canUpgradeGold = (Score >= Costs[3]);
-        canUpgradeDiamond = (Score >= Costs[4]);
-
-        // Обновляем спрайт кнопки деревянка в зависимости от условия
-        if (canUpgradeWood)
+        if (canUpgrade)
         {
-            Button woodButton = CostWoodText.GetComponentInParent<Button>();
-            Image woodButtonImage = woodButton.GetComponent<Image>();
-            woodButtonImage.sprite = Resources.Load<Sprite>("button_wood");
+            buttonImage.sprite = Resources.Load<Sprite>(upgradeSpriteName);
         }
         else
         {
-            Button woodButton = CostWoodText.GetComponentInParent<Button>();
-            Image woodButtonImage = woodButton.GetComponent<Image>();
-            woodButtonImage.sprite = Resources.Load<Sprite>("Button_woodNO");
+            buttonImage.sprite = Resources.Load<Sprite>(noUpgradeSpriteName);
         }
-        // Обновляем спрайт кнопки камень в зависимости от условия
-        if (canUpgradeStone)
-        {
-            Button stoneButton = CostStoneText.GetComponentInParent<Button>();
-            Image stoneButtonImage = stoneButton.GetComponent<Image>();
-            stoneButtonImage.sprite = Resources.Load<Sprite>("button_stone");
-        }
-        else
-        {
-            Button stoneButton = CostStoneText.GetComponentInParent<Button>();
-            Image stoneButtonImage = stoneButton.GetComponent<Image>();
-            stoneButtonImage.sprite = Resources.Load<Sprite>("Button_stoneNO");
-        }
-        // Обновляем спрайт кнопки железо в зависимости от условия
-        if (canUpgradeIron)
-        {
-            Button IronButton = CostIronText.GetComponentInParent<Button>();
-            Image IronButtonImage = IronButton.GetComponent<Image>();
-            IronButtonImage.sprite = Resources.Load<Sprite>("button_iron");
-        }
-        else
-        {
-            Button IronButton = CostIronText.GetComponentInParent<Button>();
-            Image IronButtonImage = IronButton.GetComponent<Image>();
-            IronButtonImage.sprite = Resources.Load<Sprite>("Button_ironNO");
-        }
-
-        // Обновляем спрайт кнопки голда в зависимости от условия
-        if (canUpgradeGold)
-        {
-            Button GoldButton = CostGoldText.GetComponentInParent<Button>();
-            Image GoldButtonImage = GoldButton.GetComponent<Image>();
-            GoldButtonImage.sprite = Resources.Load<Sprite>("button_gold");
-        }
-        else
-        {
-            Button GoldButton = CostGoldText.GetComponentInParent<Button>();
-            Image GoldButtonImage = GoldButton.GetComponent<Image>();
-            GoldButtonImage.sprite = Resources.Load<Sprite>("Button_goldNO");
-        }
-
-        // Обновляем спрайт кнопки алмазик в зависимости от условия
-        if (canUpgradeDiamond)
-        {
-            Button DiamondButton = CostDaimondText.GetComponentInParent<Button>();
-            Image DiamondButtonImage = DiamondButton.GetComponent<Image>();
-            DiamondButtonImage.sprite = Resources.Load<Sprite>("button_diamond");
-        }
-        else
-        {
-            Button DiamondButton = CostDaimondText.GetComponentInParent<Button>();
-            Image DiamondButtonImage = DiamondButton.GetComponent<Image>();
-            DiamondButtonImage.sprite = Resources.Load<Sprite>("Button_diamondNO");
-        }
-
     }
 
 }
