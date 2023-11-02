@@ -28,12 +28,6 @@ public class Game : MonoBehaviour
     [SerializeField] private ulong ClickScore = 1;
    
 
-    private bool canUpgradeWood = false;
-    private bool canUpgradeStone = false;
-    private bool canUpgradeIron = false;
-    private bool canUpgradeGold = false;
-    private bool canUpgradeDiamond = false;
-
     public GameObject ButtonBuy;
    
 
