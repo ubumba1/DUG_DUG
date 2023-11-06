@@ -1,4 +1,6 @@
+using System;
 using System.Collections;
+using System.Timers;
 using TMPro;
 using UnityEngine;
 
@@ -9,7 +11,9 @@ public class Timer : MonoBehaviour
     private TMP_Text _TimerText;
     [SerializeField] private int delta = 1;
     private bool isRunning = false;
-    private Coroutine timerCoroutine; // Добавляем переменную для хранения корутины
+    private Coroutine timerCoroutine;
+
+    public Action<object, ElapsedEventArgs> Elapsed { get; internal set; }
 
     private void Start()
     {
@@ -46,7 +50,7 @@ public class Timer : MonoBehaviour
             {
                 if (min == 0)
                 {
-                    StopTimer(); // Если время вышло, останавливаем таймер
+                    StopTimer();
                     break;
                 }
                 min--;

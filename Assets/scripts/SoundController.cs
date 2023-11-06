@@ -12,10 +12,8 @@ public class SoundController : MonoBehaviour
     {
         _audio = GetComponent<AudioSource>();
     }
-
     public void OnClickSoundButton()
     {
-         
         int randomIndex = Random.Range(0, ClickSounds.Length);
         _audio.PlayOneShot(ClickSounds[randomIndex]);  
     }

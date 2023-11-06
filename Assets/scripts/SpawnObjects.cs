@@ -1,36 +1,57 @@
+using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class SpawnButtons : MonoBehaviour
 {
     public GameObject[] buttonsToSpawn;
-    public Transform spawnPoint;
-    public float buttonWidth = 0.01f; 
-
-    void Start()
-    {
-        SpawnRandomButtons();
-    }
-
-    void SpawnRandomButtons()
-    {
-        // remove spawnpoint condirion
-        if (buttonsToSpawn.Length > 0 && spawnPoint != null)
+    [SerializeField] public int[] Block_HP = {100, 200, 400, 600, 600, 600, 600, 1000, 1500, 1600};  
+    //dirt, stone, iron, gold, lazurite, redstone, izumrud, diamond
+    // public Game game;
+    private void Awake() {
+        foreach(GameObject block in buttonsToSpawn)
         {
-            float totalWidth = buttonsToSpawn.Length * buttonWidth;
-            float startX = spawnPoint.position.x - totalWidth / 2;
+            block.SetActive(false);
+        }
+    }
+    public (int, string) SpawnRandomButtons()
+    {
+        float[] buttonWeights = new float[buttonsToSpawn.Length];
 
-            for (int i = 0; i < buttonsToSpawn.Length; i++)
+        buttonWeights[1] = 0.5f;  // Dirt
+        buttonWeights[2] = 0.4f;  // Stone
+        buttonWeights[3] = 0.3f;  // deepsplate
+        buttonWeights[4] = 0.2f;  // Iron
+        buttonWeights[5] = 0.1f;  // Gold
+        buttonWeights[6] = 0.05f; // Lazurite
+        buttonWeights[7] = 0.04f; // Redstone
+        buttonWeights[8] = 0.03f; // Izumrud
+        buttonWeights[9] = 0.02f; // Diamond
+
+        float totalWeight = buttonWeights.Sum();
+        float randomValue = Random.Range(0f, totalWeight);
+
+        // find index of chosen val
+        int randomIndex = 0;
+        float weightSum = 0f;
+        for (int i = 0; i < buttonsToSpawn.Length; i++)
+        {
+            weightSum += buttonWeights[i];
+            if (randomValue <= weightSum)
             {
-                float xPos = startX + i * buttonWidth;
-                Vector3 spawnPosition = new Vector3(xPos, spawnPoint.position.y, spawnPoint.position.z);
-
-                GameObject spawnedButton = Instantiate(buttonsToSpawn[i], spawnPosition, Quaternion.identity);
-                spawnedButton.transform.SetParent(spawnPoint);
+                randomIndex = i;
+                break;
             }
         }
-        else
-        {
-            Debug.LogWarning("Не установлены кнопки для спавна или точка появления.");
-        }
+
+        GameObject spawnedButton = buttonsToSpawn[randomIndex];
+        spawnedButton.SetActive(true);
+
+        string blockName = spawnedButton.name;
+        int blockHP = Block_HP[randomIndex];
+        Debug.Log(blockName + " Р±Р»РѕРє Р°РєС‚РёРІРёСЂРѕРІР°РЅ");
+
+        return (blockHP, blockName);
     }
+
 }

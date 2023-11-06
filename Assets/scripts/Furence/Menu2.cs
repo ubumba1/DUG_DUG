@@ -4,41 +4,38 @@ using UnityEngine;
 public class Menu2 : MonoBehaviour
 {
     public Transform box;
-    public Image blockerImage; // Публичная переменная для блокировщика
+    public Image blockerImage;
 
-    public AudioSource audioSource; // Ссылка на AudioSource
+    public AudioSource audioSource;
 
     private bool isDialogOpen = false;
+    private void Awake() {
+        box.LeanMoveLocalY(-Screen.height*5, 0.01f).setEaseInExpo();
+    }
 
     private void Start()
     {
-        // Начинаем с картинки вне видимости экрана
         box.localPosition = new Vector2(0, -Screen.height);
 
-        // При запуске сцены блокировщик выключен
         blockerImage.enabled = false;
 
-        // В начале убедимся, что AudioSource выключен
         audioSource.enabled = false;
     }
 
     public void ShowDialog()
     {
         box.LeanMoveLocalY(0, 0.5f).setEaseOutExpo().delay = 0.1f;
-        blockerImage.enabled = true; // Включаем блокировщик
+        blockerImage.enabled = true; 
         isDialogOpen = true;
 
-        // Включаем AudioSource
         audioSource.enabled = true;
     }
 
     public void CloseDialog()
     {
-        box.LeanMoveLocalY(-Screen.height, 0.5f).setEaseInExpo();
-        blockerImage.enabled = false; // Выключаем блокировщик
+        box.LeanMoveLocalY(-Screen.height*2, 0.5f).setEaseInExpo();
+        blockerImage.enabled = false; 
         isDialogOpen = false;
-
-        // Выключаем AudioSource
         audioSource.enabled = false;
     }
 }

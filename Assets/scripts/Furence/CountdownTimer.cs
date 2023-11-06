@@ -9,11 +9,11 @@ public class CountdownTimer : MonoBehaviour
     public ButtonMovement[] buttons;
     public Text CoalText;
 
-    public static bool timerActive = false;
+    private bool timerActive = false;
     private float countdownTime = 4f;
     private float initialCountdownTime;
-    
-
+    private string[] previousButtonText;
+    private string previousCoalText;
 
     public bool IsTimerActive()
     {
@@ -24,6 +24,13 @@ public class CountdownTimer : MonoBehaviour
     {
         initialCountdownTime = countdownTime;
 
+     
+        previousButtonText = new string[buttons.Length];
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            previousButtonText[i] = buttons[i].buttonText.text;
+        }
+        previousCoalText = CoalText.text;
     }
 
     void Update()
@@ -36,7 +43,6 @@ public class CountdownTimer : MonoBehaviour
             {
                 countdownTime = 0;
                 timerActive = false;
-
 
                 foreach (ButtonMovement button in buttons)
                 {
@@ -53,7 +59,10 @@ public class CountdownTimer : MonoBehaviour
 
                             if (currentCoal > 1 && currentValue > 1)
                             {
-                                StartTimer();
+                                if (!timerActive)
+                                {
+                                    StartTimer();
+                                }
                             }
                         }
                         return;
@@ -65,7 +74,34 @@ public class CountdownTimer : MonoBehaviour
             int seconds = Mathf.FloorToInt(countdownTime % 60);
             timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
+
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (buttons[i].buttonText.text != previousButtonText[i])
+            {
+                previousButtonText[i] = buttons[i].buttonText.text;
+
+                int currentValue;
+                if (int.TryParse(buttons[i].buttonText.text, out currentValue) && currentValue > 0)
+                {
+                    StartTimer();
+                }
+                return;
+            }
+        }
+
+        if (CoalText.text != previousCoalText)
+        {
+            previousCoalText = CoalText.text;
+
+            int currentCoal;
+            if (int.TryParse(CoalText.text, out currentCoal) && currentCoal > 0)
+            {
+                StartTimer();
+            }
+        }
     }
+
 
     public void StartTimer()
     {
@@ -76,5 +112,4 @@ public class CountdownTimer : MonoBehaviour
             countdownTime = initialCountdownTime;
         }
     }
-
 }

@@ -12,11 +12,7 @@ public class ButtonMovement : MonoBehaviour
     public Text buttonText; 
     public Text imageText;
     public Image imageToMove;
-    
-
-
     public bool IsMoved { get { return isMoved; } }
-
 
     void Start()
     {

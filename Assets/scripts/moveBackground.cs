@@ -7,6 +7,7 @@ public class moveBackground : MonoBehaviour
     private Transform back_Transform;
     private float back_Size;
     private float back_pos;
+    private bool IsMove = false;
 
     private float targetBackPos; 
 
@@ -19,19 +20,21 @@ public class moveBackground : MonoBehaviour
 
     void Update()
     {
-        Move();
+        if(IsMove == true)
+        {
+            Move();
+            IsMove = false;
+        }
     }
-
+    public void SetOneMove()
+    {
+        IsMove = true;
+    }
     public void Move()
     {
         back_pos = Mathf.Lerp(back_pos, targetBackPos, _speed * Time.deltaTime); 
-
         back_pos = Mathf.Repeat(back_pos, back_Size);
         back_Transform.position = new Vector3(0, back_pos, 0);
     }
 
-    public void RaiseBackground(float amount)
-    {
-        targetBackPos += amount; 
-    }
 }
