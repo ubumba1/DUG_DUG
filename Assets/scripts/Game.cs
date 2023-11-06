@@ -6,6 +6,7 @@ using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 
+
 public class Game : MonoBehaviour
 {
     [SerializeField] int Score;
@@ -21,15 +22,9 @@ public class Game : MonoBehaviour
     public Text DamageText;
     public Text[] CountArray;
     public moveBackground backgroundMover;
-    public GameObject ShopPanel;
-    public GameObject grass_block;
-    public GameObject dirt_block;
-    public GameObject stone_block;
-    public GameObject cubblestone_block;
-    public GameObject basalt_block;
-    public GameObject deepslate_block;
+   
     public GameObject coal;
-    public GameObject gold_ore_block;
+    
     private SpawnButtons button_spawner;
     ChangeButtonSprite SpriteReseter;
     public int current_total_block_hp;
@@ -37,7 +32,34 @@ public class Game : MonoBehaviour
     [SerializeField] public string current_block_name;
     [SerializeField] private int ClickScore = 100;
     public GameObject ButtonBuy;
-   
+
+
+    public Image PixesImage;
+    public Sprite stoneUpgradeSprite;
+    public Sprite ironUpgradeSprite;
+    public Sprite goldUpgradeSprite;
+    public Sprite diamondUpgradeSprite;
+    public Sprite woodUpgradeSprite;
+    private Sprite currentSprite;
+
+
+    private bool woodUpgradeApplied = false;
+    private bool stoneUpgradeApplied = false;
+    private bool ironUpgradeApplied = false;
+    private bool goldUpgradeApplied = false;
+    private bool diamondUpgradeApplied = false;
+
+    public AudioSource blockDestroyedSound;
+    public GameObject dirtPrefab; 
+    public GameObject stonePrefab;
+    public GameObject DeepPrefab;
+    public GameObject IronPrefab;
+    public GameObject GoldPrefab;
+    public GameObject LazurPrefab;
+    public GameObject RedsPrefab;
+    public GameObject EmeraldPrefab;
+    public GameObject DiamondPrefab;
+
     void Start()
     {
         ClickScore = 100;
@@ -83,55 +105,82 @@ public class Game : MonoBehaviour
             GameObject blockObject = GameObject.Find(current_block_name);
             blockObject.SetActive(false);
 
+            blockDestroyedSound.Play();
+
             (int new_hp, string new_name) = button_spawner.SpawnRandomButtons();
             current_total_block_hp = new_hp;
             string name = Get_block_name();
-            
+
+            GameObject blockPrefab = null;
             int c;
             if(name == "DirtBlock")
             {
                 c = int.Parse(CountArray[0].text);
                 CountArray[0].text = (c + 1).ToString();
+                blockPrefab = dirtPrefab;
             }
             else if(name == "StoneBlock")
             {
                 c = int.Parse(CountArray[1].text);
                 CountArray[1].text = (c + 1).ToString();
+                blockPrefab = stonePrefab;
             }
             else if(name == "DeepslateBlock")
             {
                 c = int.Parse(CountArray[2].text);
                 CountArray[2].text = (c + 1).ToString();
+                blockPrefab = DeepPrefab;
             }            
             else if(name == "IronBlock")
             {
                 c = int.Parse(CountArray[3].text);
                 CountArray[3].text = (c + 1).ToString();
+                blockPrefab = IronPrefab;
             }
             else if(name == "GoldBlock")
             {
                 c = int.Parse(CountArray[4].text);
                 CountArray[4].text = (c + 1).ToString();
+                blockPrefab = GoldPrefab;
             }
             else if(name == "RedstoneBlock")
             {
                 c = int.Parse(CountArray[5].text);
                 CountArray[5].text = (c + 1).ToString();
+                blockPrefab = RedsPrefab;
             }
             else if(name == "LazuriteBlock")
             {
                 c = int.Parse(CountArray[6].text);
                 CountArray[6].text = (c + 1).ToString();
+                blockPrefab = LazurPrefab;
             }             
             else if(name == "EmeraldBlock")
             {
                 c = int.Parse(CountArray[7].text);
                 CountArray[7].text = (c + 1).ToString();
+                blockPrefab = EmeraldPrefab;
             }
             else if(name == "DiamondBlock")
             {
                 c = int.Parse(CountArray[8].text);
                 CountArray[8].text = (c + 1).ToString();
+                blockPrefab = DiamondPrefab;
+            }
+
+            if (blockPrefab != null)
+            {
+                GameObject newBlock = Instantiate(blockPrefab, blockObject.transform.position, Quaternion.identity);
+
+                
+                newBlock.transform.parent = blockObject.transform.parent;
+
+                Vector3 targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, Camera.main.transform.position.z));
+
+                LeanTween.move(newBlock, targetPosition, 1.0f).setEaseOutQuad().setOnComplete(() =>
+                {
+                    Destroy(newBlock);
+                });
             }
             backgroundMover.Move();
             Set_block_name(new_name);
@@ -178,9 +227,23 @@ public class Game : MonoBehaviour
             {
                 soundController.OnClickSoundButton();
             }
+            if (PixesImage != null && woodUpgradeSprite != null)
+            {
+                if (!stoneUpgradeApplied && !ironUpgradeApplied && !goldUpgradeApplied && !diamondUpgradeApplied)
+                {
+                    currentSprite = woodUpgradeSprite;
+                }
+
+                PixesImage.sprite = currentSprite;
+            }
+
+            woodUpgradeApplied = true;
+
+            
         }
     }
     
+
     public void OnClickStoneUpgrade()
     {
         if (Score >= Costs[1])
@@ -194,6 +257,20 @@ public class Game : MonoBehaviour
             {
                 soundController.OnClickSoundButton();
             }
+
+            if (PixesImage != null && stoneUpgradeSprite != null)
+            {
+                if (!ironUpgradeApplied && !goldUpgradeApplied && !diamondUpgradeApplied)
+                {
+                    currentSprite = stoneUpgradeSprite;
+                }
+
+                PixesImage.sprite = currentSprite;
+            }
+
+            stoneUpgradeApplied = true;
+
+         
         }
     }
 
@@ -210,8 +287,20 @@ public class Game : MonoBehaviour
             {
                 soundController.OnClickSoundButton();
             }
+            if (PixesImage != null && ironUpgradeSprite != null)
+            {
+                if (!goldUpgradeApplied && !diamondUpgradeApplied)
+                {
+                    currentSprite = ironUpgradeSprite;
+                }
+
+                PixesImage.sprite = currentSprite;
+            }
+
+            ironUpgradeApplied = true;
         }
     }
+
     public void OnClickGoldUpgrade()
     {
         if (Score >= Costs[3])
@@ -225,8 +314,21 @@ public class Game : MonoBehaviour
             {
                 soundController.OnClickSoundButton();
             }
+
+            if (PixesImage != null && goldUpgradeSprite != null)
+            {
+                if (!diamondUpgradeApplied)
+                {
+                    currentSprite = goldUpgradeSprite;
+                }
+
+                PixesImage.sprite = currentSprite;
+            }
+
+            goldUpgradeApplied = true;
         }
     }
+
     public void OnClickDaimondUpgrade()
     {
         if (Score >= Costs[4])
@@ -240,10 +342,19 @@ public class Game : MonoBehaviour
             {
                 soundController.OnClickSoundButton();
             }
+
+            if (PixesImage != null && diamondUpgradeSprite != null)
+            {
+                currentSprite = diamondUpgradeSprite;
+                PixesImage.sprite = currentSprite;
+            }
+
+            diamondUpgradeApplied = true;
         }
     }
-    
-public void OnClickCoalBuy()
+
+
+    public void OnClickCoalBuy()
     {
         if (Score >= coalcost)
         {
@@ -280,5 +391,4 @@ public void OnClickCoalBuy()
             buttonImage.sprite = Resources.Load<Sprite>(noUpgradeSpriteName);
         }
     }
-
 }
