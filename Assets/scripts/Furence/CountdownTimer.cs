@@ -23,13 +23,13 @@ public class CountdownTimer : MonoBehaviour
     void Start()
     {
         initialCountdownTime = countdownTime;
-
-     
         previousButtonText = new string[buttons.Length];
+
         for (int i = 0; i < buttons.Length; i++)
         {
             previousButtonText[i] = buttons[i].buttonText.text;
         }
+
         previousCoalText = CoalText.text;
     }
 
@@ -50,6 +50,7 @@ public class CountdownTimer : MonoBehaviour
                     {
                         int currentValue = int.Parse(button.buttonText.text);
                         int currentCoal = int.Parse(CoalText.text);
+
                         if (currentValue > 0 && currentCoal > 0)
                         {
                             button.buttonText.text = (currentValue - 1).ToString();
@@ -59,12 +60,10 @@ public class CountdownTimer : MonoBehaviour
 
                             if (currentCoal > 1 && currentValue > 1)
                             {
-                                if (!timerActive)
-                                {
-                                    StartTimer();
-                                }
+                                StartTimer(); // ѕерезапустите таймер только если оба значени€ больше 1
                             }
                         }
+
                         return;
                     }
                 }
@@ -102,14 +101,22 @@ public class CountdownTimer : MonoBehaviour
         }
     }
 
-
     public void StartTimer()
     {
         int currentCoal = int.Parse(CoalText.text);
-        if (currentCoal > 0)
+
+        foreach (ButtonMovement button in buttons)
         {
-            timerActive = true;
-            countdownTime = initialCountdownTime;
+            if (button.IsMoved && currentCoal > 0 && !timerActive)
+            {
+                int currentValue = int.Parse(button.buttonText.text);
+                if (currentValue > 0) // ƒобавлено условие, чтобы проверить, что значение больше 0
+                {
+                    timerActive = true;
+                    countdownTime = initialCountdownTime;
+                }
+                return;
+            }
         }
     }
 }

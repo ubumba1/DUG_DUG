@@ -50,6 +50,8 @@ public class Game : MonoBehaviour
     private bool diamondUpgradeApplied = false;
 
     public AudioSource blockDestroyedSound;
+    public AudioSource coalaudio;
+
     public GameObject dirtPrefab; 
     public GameObject stonePrefab;
     public GameObject DeepPrefab;
@@ -60,6 +62,15 @@ public class Game : MonoBehaviour
     public GameObject EmeraldPrefab;
     public GameObject DiamondPrefab;
 
+    public ParticleSpawner particleSpawner;
+
+    public Text notificationText;
+    private float notificationTimer = 0f;
+    private bool showingNotification = false;
+    private bool coalNotificationShown = false;
+    public ShakeText shakeText;
+
+
     void Start()
     {
         ClickScore = 100;
@@ -68,6 +79,7 @@ public class Game : MonoBehaviour
 
         (current_block_hp, current_block_name) = button_spawner.SpawnRandomButtons();
         current_total_block_hp = current_block_hp;
+        notificationText = GameObject.Find("NotificationText").GetComponent<Text>();
     }
 
     public void add_score(int val)
@@ -238,8 +250,9 @@ public class Game : MonoBehaviour
             }
 
             woodUpgradeApplied = true;
+            Vector3 position = new Vector3(6f, 0.5f, 0f); 
+            particleSpawner.SpawnParticle(position);
 
-            
         }
     }
     
@@ -269,8 +282,9 @@ public class Game : MonoBehaviour
             }
 
             stoneUpgradeApplied = true;
+            Vector3 position = new Vector3(6f, -0.5f, 0f);
+            particleSpawner.SpawnParticle(position);
 
-         
         }
     }
 
@@ -298,6 +312,8 @@ public class Game : MonoBehaviour
             }
 
             ironUpgradeApplied = true;
+            Vector3 position = new Vector3(6f, -1.5f, 0f);
+            particleSpawner.SpawnParticle(position);
         }
     }
 
@@ -326,6 +342,8 @@ public class Game : MonoBehaviour
             }
 
             goldUpgradeApplied = true;
+            Vector3 position = new Vector3(6f, -2.5f, 0f);
+            particleSpawner.SpawnParticle(position);
         }
     }
 
@@ -350,6 +368,8 @@ public class Game : MonoBehaviour
             }
 
             diamondUpgradeApplied = true;
+            Vector3 position = new Vector3(6f, -3.5f, 0f);
+            particleSpawner.SpawnParticle(position);
         }
     }
 
@@ -361,11 +381,19 @@ public class Game : MonoBehaviour
             Score -= coalcost;
             int current_coal = Int32.Parse(coal_out.text);
             coal_out.text = Convert.ToString(current_coal + 1);
+
+            coalaudio.Play();
+            if (current_coal == 0 && coalNotificationShown)
+            {
+                coalNotificationShown = false;
+            }
         }
     }
-    private void Update()
+
+        private void Update()
         {
-            ScoreText.text = ShowCost(Score);
+        int current_coal = Int32.Parse(coal_out.text);
+        ScoreText.text = ShowCost(Score);
             DamageText.text = Convert.ToString(ClickScore);
 
             UpdateButton(CostWoodText, 0, "button_wood", "Button_woodNO");
@@ -373,7 +401,31 @@ public class Game : MonoBehaviour
             UpdateButton(CostIronText, 2, "button_iron", "Button_ironNO");
             UpdateButton(CostGoldText, 3, "button_gold", "Button_goldNO");
             UpdateButton(CostDaimondText, 4, "button_diamond", "Button_diamondNO");
+
+        if (current_coal == 0 && !coalNotificationShown)
+        {
+            showingNotification = true;
+            notificationText.text = "” ¬¿— «¿ ŒÕ◊»À—ﬂ ”√ŒÀ‹!!!";
+            notificationText.gameObject.SetActive(true);
+            notificationTimer = 4f; 
+            coalNotificationShown = true;
+
+            shakeText.StartShake();
         }
+
+        if (showingNotification)
+        {
+            notificationTimer -= Time.deltaTime;
+            if (notificationTimer <= 0)
+            {
+                showingNotification = false;
+                notificationText.gameObject.SetActive(false);
+            }
+        }
+    }
+
+
+
 
     private void UpdateButton(Text costText, int index, string upgradeSpriteName, string noUpgradeSpriteName)
     {
