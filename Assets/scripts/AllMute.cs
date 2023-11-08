@@ -1,11 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class AllMute : MonoBehaviour
+public class ToggleMuteButton : MonoBehaviour
 {
+    public Sprite soundOnSprite; 
+    public Sprite soundOffSprite; 
+    private bool isMuted = false;
+    private Image buttonImage;
+
+    void Start()
+    {
+        buttonImage = GetComponent<Image>();
+    }
+
     public void ToggleMute()
     {
-        AudioListener.pause = !AudioListener.pause; 
+        isMuted = !isMuted;
+        AudioListener.pause = isMuted;
+
+        if (isMuted)
+        {
+            buttonImage.sprite = soundOffSprite;
+        }
+        else
+        {
+            buttonImage.sprite = soundOnSprite;
+        }
     }
 }
+

@@ -11,8 +11,11 @@ public class Game : MonoBehaviour
 {
     [SerializeField] int Score;
     public int coalcost = 90;
+    public int autoClickCost = 100;
+    public int autoClickDamage = 5;
+    public bool isAutoClickActive = false;
     public Text coal_out;
-    public int[] Costs = {100,1000,10000,100000,1000000};
+    public int[] Costs = { 100, 1000, 10000, 50000, 100000 };
     public Text CostWoodText;
     public Text CostStoneText;
     public Text CostIronText;
@@ -22,9 +25,9 @@ public class Game : MonoBehaviour
     public Text DamageText;
     public Text[] CountArray;
     public moveBackground backgroundMover;
-   
+
     public GameObject coal;
-    
+
     private SpawnButtons button_spawner;
     ChangeButtonSprite SpriteReseter;
     public int current_total_block_hp;
@@ -52,7 +55,7 @@ public class Game : MonoBehaviour
     public AudioSource blockDestroyedSound;
     public AudioSource coalaudio;
 
-    public GameObject dirtPrefab; 
+    public GameObject dirtPrefab;
     public GameObject stonePrefab;
     public GameObject DeepPrefab;
     public GameObject IronPrefab;
@@ -61,15 +64,14 @@ public class Game : MonoBehaviour
     public GameObject RedsPrefab;
     public GameObject EmeraldPrefab;
     public GameObject DiamondPrefab;
-
     public ParticleSpawner particleSpawner;
-
     public Text notificationText;
     private float notificationTimer = 0f;
     private bool showingNotification = false;
     private bool coalNotificationShown = false;
     public ShakeText shakeText;
 
+    
 
     void Start()
     {
@@ -106,11 +108,14 @@ public class Game : MonoBehaviour
     {
         current_block_name = name;
     }
-    public void Hit()
+
+    public void _OnHit(int damage)
     {
-        if (current_block_hp > ClickScore)
+        
+
+        if (current_block_hp > damage)
         {
-            current_block_hp -= ClickScore;
+            current_block_hp -= damage;
         }
         else
         {
@@ -125,55 +130,55 @@ public class Game : MonoBehaviour
 
             GameObject blockPrefab = null;
             int c;
-            if(name == "DirtBlock")
+            if (name == "DirtBlock")
             {
                 c = int.Parse(CountArray[0].text);
                 CountArray[0].text = (c + 1).ToString();
                 blockPrefab = dirtPrefab;
             }
-            else if(name == "StoneBlock")
+            else if (name == "StoneBlock")
             {
                 c = int.Parse(CountArray[1].text);
                 CountArray[1].text = (c + 1).ToString();
                 blockPrefab = stonePrefab;
             }
-            else if(name == "DeepslateBlock")
+            else if (name == "DeepslateBlock")
             {
                 c = int.Parse(CountArray[2].text);
                 CountArray[2].text = (c + 1).ToString();
                 blockPrefab = DeepPrefab;
-            }            
-            else if(name == "IronBlock")
+            }
+            else if (name == "IronBlock")
             {
                 c = int.Parse(CountArray[3].text);
                 CountArray[3].text = (c + 1).ToString();
                 blockPrefab = IronPrefab;
             }
-            else if(name == "GoldBlock")
+            else if (name == "GoldBlock")
             {
                 c = int.Parse(CountArray[4].text);
                 CountArray[4].text = (c + 1).ToString();
                 blockPrefab = GoldPrefab;
             }
-            else if(name == "RedstoneBlock")
+            else if (name == "RedstoneBlock")
             {
                 c = int.Parse(CountArray[5].text);
                 CountArray[5].text = (c + 1).ToString();
                 blockPrefab = RedsPrefab;
             }
-            else if(name == "LazuriteBlock")
+            else if (name == "LazuriteBlock")
             {
                 c = int.Parse(CountArray[6].text);
                 CountArray[6].text = (c + 1).ToString();
                 blockPrefab = LazurPrefab;
-            }             
-            else if(name == "EmeraldBlock")
+            }
+            else if (name == "EmeraldBlock")
             {
                 c = int.Parse(CountArray[7].text);
                 CountArray[7].text = (c + 1).ToString();
                 blockPrefab = EmeraldPrefab;
             }
-            else if(name == "DiamondBlock")
+            else if (name == "DiamondBlock")
             {
                 c = int.Parse(CountArray[8].text);
                 CountArray[8].text = (c + 1).ToString();
@@ -184,7 +189,6 @@ public class Game : MonoBehaviour
             {
                 GameObject newBlock = Instantiate(blockPrefab, blockObject.transform.position, Quaternion.identity);
 
-                
                 newBlock.transform.parent = blockObject.transform.parent;
 
                 Vector3 targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, Camera.main.transform.position.z));
@@ -197,10 +201,25 @@ public class Game : MonoBehaviour
             backgroundMover.Move();
             Set_block_name(new_name);
             Set_block_hp(new_hp);
-            
+
         }
     }
+    public void Hit()
+    {
+        _OnHit(ClickScore);
+    }
+    public void _AutoHit()
+    {
+        _OnHit(autoClickDamage);
+    }
 
+    IEnumerator IdleFarm()
+    {
+        yield return new WaitForSeconds(1);
+        Debug.Log("¿‚ÚÓ”‰‡");
+        _AutoHit();
+        StartCoroutine(IdleFarm());
+    }
     private string ShowCost(int val)
     {
         string[] symbols = { "", "K", "M", "B", "T", "aa", "ab" };
@@ -250,12 +269,11 @@ public class Game : MonoBehaviour
             }
 
             woodUpgradeApplied = true;
-            Vector3 position = new Vector3(6f, 0.5f, 0f); 
+            Vector3 position = new Vector3(6f, 0.5f, 0f);
             particleSpawner.SpawnParticle(position);
 
         }
     }
-    
 
     public void OnClickStoneUpgrade()
     {
@@ -372,8 +390,6 @@ public class Game : MonoBehaviour
             particleSpawner.SpawnParticle(position);
         }
     }
-
-
     public void OnClickCoalBuy()
     {
         if (Score >= coalcost)
@@ -390,24 +406,44 @@ public class Game : MonoBehaviour
         }
     }
 
-        private void Update()
+    public void OnClickAutoHitBy()
+    {
+        if (Score >= autoClickCost)
         {
+            Score -= autoClickCost;
+            autoClickCost *= 2;
+            autoClickDamage += 5;
+
+            SoundController soundController = ButtonBuy.GetComponent<SoundController>();
+            if (soundController != null)
+            {
+                soundController.OnClickSoundButton();
+            }
+            if (isAutoClickActive == false)
+            {
+                StartCoroutine(IdleFarm());
+                isAutoClickActive = true;
+            }
+        }
+    }
+    private void Update()
+    {
         int current_coal = Int32.Parse(coal_out.text);
         ScoreText.text = ShowCost(Score);
-            DamageText.text = Convert.ToString(ClickScore);
+        DamageText.text = Convert.ToString(ClickScore);
 
-            UpdateButton(CostWoodText, 0, "button_wood", "Button_woodNO");
-            UpdateButton(CostStoneText, 1, "button_stone", "Button_stoneNO");
-            UpdateButton(CostIronText, 2, "button_iron", "Button_ironNO");
-            UpdateButton(CostGoldText, 3, "button_gold", "Button_goldNO");
-            UpdateButton(CostDaimondText, 4, "button_diamond", "Button_diamondNO");
+        UpdateButton(CostWoodText, 0, "button_wood", "Button_woodNO");
+        UpdateButton(CostStoneText, 1, "button_stone", "Button_stoneNO");
+        UpdateButton(CostIronText, 2, "button_iron", "Button_ironNO");
+        UpdateButton(CostGoldText, 3, "button_gold", "Button_goldNO");
+        UpdateButton(CostDaimondText, 4, "button_diamond", "Button_diamondNO");
 
         if (current_coal == 0 && !coalNotificationShown)
         {
             showingNotification = true;
             notificationText.text = "” ¬¿— «¿ ŒÕ◊»À—ﬂ ”√ŒÀ‹!!!";
             notificationText.gameObject.SetActive(true);
-            notificationTimer = 4f; 
+            notificationTimer = 4f;
             coalNotificationShown = true;
 
             shakeText.StartShake();
@@ -431,7 +467,7 @@ public class Game : MonoBehaviour
     {
         Button button = costText.GetComponentInParent<Button>();
         Image buttonImage = button.GetComponent<Image>();
-        
+
         bool canUpgrade = (Score >= Costs[index]);
 
         if (canUpgrade)
