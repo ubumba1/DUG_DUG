@@ -15,12 +15,13 @@ public class Game : MonoBehaviour
     public int autoClickDamage = 5;
     public bool isAutoClickActive = false;
     public Text coal_out;
-    public int[] Costs = { 100, 1000, 10000, 50000, 100000 };
+    public int[] Costs = { 100, 1000, 10000, 50000, 100000, 1000};
     public Text CostWoodText;
     public Text CostStoneText;
     public Text CostIronText;
     public Text CostGoldText;
     public Text CostDaimondText;
+    public Text CostAutoText;
     public Text ScoreText;
     public Text DamageText;
     public Text[] CountArray;
@@ -71,7 +72,10 @@ public class Game : MonoBehaviour
     private bool coalNotificationShown = false;
     public ShakeText shakeText;
 
-    
+
+    public ShowDamageText damageTextManager;
+    public ShowDamaAuto autoClickDamageScript;
+
 
     void Start()
     {
@@ -112,6 +116,7 @@ public class Game : MonoBehaviour
     public void _OnHit(int damage)
     {
         
+
 
         if (current_block_hp > damage)
         {
@@ -206,11 +211,21 @@ public class Game : MonoBehaviour
     }
     public void Hit()
     {
+        damageTextManager.ShowText(ClickScore);
         _OnHit(ClickScore);
+    }
+
+    public void UpdateDamage(int newDamage)
+    {
+        ClickScore = newDamage;
+        DamageText.text = ClickScore.ToString(); 
     }
     public void _AutoHit()
     {
+
+        autoClickDamageScript.ShowTextAuto(autoClickDamage);
         _OnHit(autoClickDamage);
+
     }
 
     IEnumerator IdleFarm()
@@ -269,7 +284,7 @@ public class Game : MonoBehaviour
             }
 
             woodUpgradeApplied = true;
-            Vector3 position = new Vector3(6f, 0.5f, 0f);
+            Vector3 position = new Vector3(6f, 1.5f, 0f);
             particleSpawner.SpawnParticle(position);
 
         }
@@ -300,7 +315,7 @@ public class Game : MonoBehaviour
             }
 
             stoneUpgradeApplied = true;
-            Vector3 position = new Vector3(6f, -0.5f, 0f);
+            Vector3 position = new Vector3(6f, 0.5f, 0f);
             particleSpawner.SpawnParticle(position);
 
         }
@@ -330,7 +345,7 @@ public class Game : MonoBehaviour
             }
 
             ironUpgradeApplied = true;
-            Vector3 position = new Vector3(6f, -1.5f, 0f);
+            Vector3 position = new Vector3(6f, -0.5f, 0f);
             particleSpawner.SpawnParticle(position);
         }
     }
@@ -360,7 +375,7 @@ public class Game : MonoBehaviour
             }
 
             goldUpgradeApplied = true;
-            Vector3 position = new Vector3(6f, -2.5f, 0f);
+            Vector3 position = new Vector3(6f, -1.5f, 0f);
             particleSpawner.SpawnParticle(position);
         }
     }
@@ -386,7 +401,7 @@ public class Game : MonoBehaviour
             }
 
             diamondUpgradeApplied = true;
-            Vector3 position = new Vector3(6f, -3.5f, 0f);
+            Vector3 position = new Vector3(6f, -2.5f, 0f);
             particleSpawner.SpawnParticle(position);
         }
     }
@@ -408,11 +423,12 @@ public class Game : MonoBehaviour
 
     public void OnClickAutoHitBy()
     {
-        if (Score >= autoClickCost)
+        if (Score >= Costs[5])
         {
-            Score -= autoClickCost;
-            autoClickCost *= 2;
+            Score -= Costs[5];
+            Costs[5] *= 2;
             autoClickDamage += 5;
+            CostAutoText.text = ShowCost(Costs[5]) + "$";
 
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
@@ -424,6 +440,8 @@ public class Game : MonoBehaviour
                 StartCoroutine(IdleFarm());
                 isAutoClickActive = true;
             }
+            Vector3 position = new Vector3(6f, -3.5f, 0f);
+            particleSpawner.SpawnParticle(position);
         }
     }
     private void Update()
@@ -437,6 +455,7 @@ public class Game : MonoBehaviour
         UpdateButton(CostIronText, 2, "button_iron", "Button_ironNO");
         UpdateButton(CostGoldText, 3, "button_gold", "Button_goldNO");
         UpdateButton(CostDaimondText, 4, "button_diamond", "Button_diamondNO");
+        UpdateButton(CostAutoText, 5, "Auto_Click", "Auto_ClickNO");
 
         if (current_coal == 0 && !coalNotificationShown)
         {
