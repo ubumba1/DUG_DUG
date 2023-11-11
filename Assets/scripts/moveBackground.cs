@@ -2,39 +2,58 @@ using UnityEngine;
 
 public class moveBackground : MonoBehaviour
 {
-    [SerializeField]
-    float _speed;
-    private Transform back_Transform;
-    private float back_Size;
-    private float back_pos;
-    private bool IsMove = false;
-
-    private float targetBackPos; 
+    [SerializeField] private float speed = 6;
+    private Transform backgroundTransform;
+    private float backgroundSize;
+    private float targetBackgroundPosition;
+    private bool isMoving;
 
     void Start()
     {
-        back_Transform = GetComponent<Transform>();
-        back_Size = GetComponent<SpriteRenderer>().bounds.size.y;
-        targetBackPos = back_pos; 
+        backgroundTransform = GetComponent<Transform>();
+        backgroundSize = GetComponent<SpriteRenderer>().bounds.size.y - 4;
+        targetBackgroundPosition = backgroundTransform.position.y;
+        isMoving = false;
     }
 
     void Update()
     {
-        if(IsMove == true)
+        if (isMoving)
         {
             Move();
-            IsMove = false;
         }
     }
-    public void SetOneMove()
+
+    void Move()
     {
-        IsMove = true;
-    }
-    public void Move()
-    {
-        back_pos = Mathf.Lerp(back_pos, targetBackPos, _speed * Time.deltaTime); 
-        back_pos = Mathf.Repeat(back_pos, back_Size);
-        back_Transform.position = new Vector3(0, back_pos, 0);
+        float step = speed * Time.deltaTime;
+        backgroundTransform.position = Vector3.MoveTowards(backgroundTransform.position, new Vector3(0, targetBackgroundPosition, 0), step);
+
+        // Если фон стал невидимым для камеры, сбросим его позицию
+        if (!IsVisibleFromCamera())
+        {
+            backgroundTransform.position = new Vector3(0, targetBackgroundPosition, 0);
+            targetBackgroundPosition = Mathf.Repeat(targetBackgroundPosition, backgroundSize);
+            isMoving = false;
+        }
     }
 
+    public void RaiseBackground(float amount)
+    {
+        targetBackgroundPosition += amount;
+        isMoving = true;
+    }
+
+    // Проверка, видим ли объект относительно камеры
+    private bool IsVisibleFromCamera()
+    {
+        if (backgroundTransform.GetComponent<Renderer>() == null)
+        {
+            // Если компонента Renderer отсутствует, считаем объект видимым
+            return true;
+        }
+
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
+        return GeometryUtility.TestPlanesAABB(planes, backgroundTransform.GetComponent<Renderer>().bounds);
+    }
 }

@@ -8,7 +8,6 @@ public class ShakeText : MonoBehaviour
     public Text textComponent;
     public float shakeAmount = 1f;
     public float shakeDuration = 0.1f;
-
     private Vector3 originalPosition;
 
     void Start()

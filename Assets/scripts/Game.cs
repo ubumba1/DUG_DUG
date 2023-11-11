@@ -25,8 +25,7 @@ public class Game : MonoBehaviour
     public Text ScoreText;
     public Text DamageText;
     public Text[] CountArray;
-    public moveBackground backgroundMover;
-
+    public moveBackground moveBackground;
     public GameObject coal;
 
     private SpawnButtons button_spawner;
@@ -203,7 +202,9 @@ public class Game : MonoBehaviour
                     Destroy(newBlock);
                 });
             }
-            backgroundMover.Move();
+
+            moveBackground.RaiseBackground(0.5f);
+
             Set_block_name(new_name);
             Set_block_hp(new_hp);
 
@@ -231,7 +232,6 @@ public class Game : MonoBehaviour
     IEnumerator IdleFarm()
     {
         yield return new WaitForSeconds(1);
-        Debug.Log("ÀâòîÓäàð");
         _AutoHit();
         StartCoroutine(IdleFarm());
     }
@@ -297,7 +297,7 @@ public class Game : MonoBehaviour
             Score -= Costs[1];
             Costs[1] += 200;
             ClickScore += 4;
-            CostStoneText.text = ShowCost(Costs[1]) + "$";
+            CostStoneText.text = ShowCost(Costs[1]);
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -328,7 +328,7 @@ public class Game : MonoBehaviour
             Score -= Costs[2];
             Costs[2] += 600;
             ClickScore += 6;
-            CostIronText.text = ShowCost(Costs[2]) + "$";
+            CostIronText.text = ShowCost(Costs[2]);
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -357,7 +357,7 @@ public class Game : MonoBehaviour
             Score -= Costs[3];
             Costs[3] += 1000;
             ClickScore += 8;
-            CostGoldText.text = ShowCost(Costs[3]) + "$";
+            CostGoldText.text = ShowCost(Costs[3]);
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -387,7 +387,7 @@ public class Game : MonoBehaviour
             Score -= Costs[4];
             Costs[4] += 2000;
             ClickScore += 10;
-            CostDaimondText.text = ShowCost(Costs[4]) + "$";
+            CostDaimondText.text = ShowCost(Costs[4]);
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
             {
@@ -428,7 +428,7 @@ public class Game : MonoBehaviour
             Score -= Costs[5];
             Costs[5] *= 2;
             autoClickDamage += 5;
-            CostAutoText.text = ShowCost(Costs[5]) + "$";
+            CostAutoText.text = ShowCost(Costs[5]);
 
             SoundController soundController = ButtonBuy.GetComponent<SoundController>();
             if (soundController != null)
@@ -460,7 +460,7 @@ public class Game : MonoBehaviour
         if (current_coal == 0 && !coalNotificationShown)
         {
             showingNotification = true;
-            notificationText.text = "Ó ÂÀÑ ÇÀÊÎÍ×ÈËÑß ÓÃÎËÜ!!!";
+            notificationText.text = "ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½!!!";
             notificationText.gameObject.SetActive(true);
             notificationTimer = 4f;
             coalNotificationShown = true;

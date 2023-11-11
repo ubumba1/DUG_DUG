@@ -33,7 +33,7 @@ public class Menu2 : MonoBehaviour
 
     public void CloseDialog()
     {
-        box.LeanMoveLocalY(-Screen.height*2, 0.5f).setEaseInExpo();
+        box.LeanMoveLocalY(-Screen.height*20, 0.5f).setEaseInExpo();
         blockerImage.enabled = false; 
         isDialogOpen = false;
         audioSource.enabled = false;
